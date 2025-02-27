@@ -7,7 +7,7 @@ const groups = fs.readdirSync("tiles").filter(g => !g.endsWith(".png"));
 const blankPicnum = 3026;
 
 // used to draw a line after the group name
-const separatorPicnum = 355n;
+const separatorPicnum = 355;
 
 // 2854 = blue
 // 2940 = red 
@@ -28,15 +28,6 @@ const tilesCfgContent = `tilegroup "TAGGED GROUPS" {
             const name = g.indexOf(".") > -1 ? g.split(".")[1] : g;
             const nameSprites = name.split("").map(c => fontPicnum + c.toUpperCase().charCodeAt(0) - 65);
 
-            // const groupNamePicnums = 
-            //     nameSprites 
-            //     .concat(
-            //         blankPicnum, 
-            //         ...new Array(gridColumNumber - (name.length + 2)).fill(separatorPicnum),
-            //         blankPicnum
-            //     )
-            // ;
-
             const groupNamePicnums = [
                 3401,3392,
                 blankPicnum,
@@ -45,22 +36,12 @@ const tilesCfgContent = `tilegroup "TAGGED GROUPS" {
                 ...new Array(gridColumNumber - (name.length + 4)).fill(1293)
             ];
 
-            // 
-            // const padding = parseInt((gridColumNumber - nameSprites.length) / 2);
-            // const groupNamePicnums = [
-            //         ...new Array(padding).fill(separatorPicnum),
-            //         ...nameSprites,
-            //         ...new Array(padding).fill(separatorPicnum)
-            // ];
-
             while (groupNamePicnums.length < gridColumNumber) {
                 groupNamePicnums.push(separatorPicnum);
             }
 
             const files = fs.readdirSync(`tiles/${g}`).filter(f => f.endsWith(".png"));
             const tilesPicnums = files.map(f => f.split(".")[0]).sort((a,b) => a-b).concat(...new Array(gridColumNumber - ((files.length % gridColumNumber) || gridColumNumber)).fill(blankPicnum));
-
-            if (name === "liquids") console.log(tilesPicnums);
 
             const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png"));
             for(const subdir of subdirs) {
@@ -75,6 +56,7 @@ const tilesCfgContent = `tilegroup "TAGGED GROUPS" {
         ${tilesPicnums.join(" ")}
         ${new Array(gridColumNumber).fill(blankPicnum).join(" ")}
         `;
+
         }).join("\r")}
 
     }
