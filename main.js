@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 // defined groups in directory
-const groups = fs.readdirSync("tiles").filter(g => !g.endsWith(".png"));
+const groups = fs.readdirSync("tiles").filter(g => !g.endsWith(".png") && g.indexOf("@") === -1);
 
 // used to break lines
 const blankPicnum = 3026;
@@ -52,7 +52,7 @@ const tilesCfgContent = `tilegroup "TAGGED GROUPS" {
             
             const tilesPicnums = [];
 
-            const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png"));
+            const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1);
             for(const subdir of subdirs) {
                 const subfiles = fs.readdirSync(`tiles/${g}/${subdir}`).filter(f => f.indexOf("@") === -1);
                 tilesPicnums.push(
