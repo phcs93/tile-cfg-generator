@@ -4,7 +4,7 @@ const fs = require("fs");
 const groups = fs.readdirSync("tiles").filter(g => !g.endsWith(".png") && g.indexOf("@") === -1);
 
 // used to break lines
-const blankPicnum = 3026;
+const blankPicnum = 562;
 
 // used to draw a line after the group name
 const separatorPicnum = 355;
@@ -15,10 +15,13 @@ const separatorPicnum = 355;
 const fontPicnum = 2966;
 
 // corresponding to tile selection menu grid size
-const gridColumNumber = 30;
+const resolution = { width: 1920, height: 1080 };
+const gridColumNumber = resolution.width / 64;
 
 // smart sorting algorithm
 const smartSort = (a,b) => {
+    if (a.indexOf("z#") > -1 && b.indexOf("z#") === -1) return +1;
+    if (b.indexOf("z#") > -1 && a.indexOf("z#") === -1) return -1;
     if (a.indexOf("#") > -1 && b.indexOf("#") === -1) return -1;
     if (b.indexOf("#") > -1 && a.indexOf("#") === -1) return +1;
     if (a.indexOf("#") > -1 && b.indexOf("#") > -1) {
