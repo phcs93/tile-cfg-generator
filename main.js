@@ -55,8 +55,8 @@ tilegroup "TAGGED GROUPS" {
             
             const tilesPicnums = [];
 
-            const subdirsBefore = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && !f.endsWith("&") && f.indexOf("@") === -1).sort(smartSort);
-            for(const subdir of subdirsBefore) {
+            const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);
+            for(const subdir of subdirs) {
                 const subfiles = fs.readdirSync(`tiles/${g}/${subdir}`).filter(f => f.indexOf("@") === -1);
                 tilesPicnums.push(
                     ...subfiles
@@ -79,20 +79,6 @@ tilegroup "TAGGED GROUPS" {
                     ...new Array(gridColumNumber - ((files.length % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
                 )
             );
-
-            const subdirsAfter = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && f.endsWith("&") && f.indexOf("@") === -1).sort(smartSort);
-            for(const subdir of subdirsAfter) {
-                const subfiles = fs.readdirSync(`tiles/${g}/${subdir}`).filter(f => f.indexOf("@") === -1);
-                tilesPicnums.push(
-                    ...subfiles
-                    .map(f => f.split(".")[0])                    
-                    .sort(smartSort)
-                    .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
-                    .concat(
-                        ...new Array(gridColumNumber - ((subfiles.length % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
-                    )
-                );
-            }
 
             return `
         // ${name}
