@@ -63,10 +63,12 @@ tilegroup "TAGGED GROUPS" {
                     .map(f => f.split(".")[0])                    
                     .sort(smartSort)
                     .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
-                    .concat(
-                        ...new Array(gridColumNumber - ((subfiles.length % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
-                    )
                 );
+                if (subdir.indexOf("$") > -1) {                    
+                    tilesPicnums.push(
+                         ...new Array(gridColumNumber - ((subfiles.length % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
+                    )
+                }
             }
 
             const files = fs.readdirSync(`tiles/${g}`).filter(f => f.endsWith(".png")).filter(f => f.indexOf("@") === -1);
@@ -75,9 +77,13 @@ tilegroup "TAGGED GROUPS" {
                 .map(f => f.split(".")[0])
                 .sort(smartSort)
                 .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
-                .concat(
-                    ...new Array(gridColumNumber - ((files.length % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
-                )
+                // .concat(
+                //     ...new Array(gridColumNumber - ((files.length % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
+                // )
+            );
+
+            tilesPicnums.push(
+                ...new Array(gridColumNumber - (tilesPicnums.length % gridColumNumber || gridColumNumber)).fill(blankPicnum)
             );
 
             return `
