@@ -55,9 +55,11 @@ tilegroup "TAGGED GROUPS" {
             
             const tilesPicnums = [];
 
+            let beforeBreak = 0;
             const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);
             for(const subdir of subdirs) {
                 const subfiles = fs.readdirSync(`tiles/${g}/${subdir}`).filter(f => f.indexOf("@") === -1);
+                beforeBreak += subfiles.length;
                 tilesPicnums.push(
                     ...subfiles
                     .map(f => f.split(".")[0])                    
@@ -66,8 +68,9 @@ tilegroup "TAGGED GROUPS" {
                 );
                 if (subdir.indexOf("$") > -1) {                    
                     tilesPicnums.push(
-                         ...new Array(gridColumNumber - ((subfiles.length % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
+                         ...new Array(gridColumNumber - ((beforeBreak % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
                     )
+                    beforeBreak = 0;
                 }
             }
 
