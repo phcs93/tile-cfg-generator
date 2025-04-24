@@ -100,34 +100,12 @@ const taggedGroups = `tilegroup "TAGGED GROUPS" {
             
             processDirRecursive(`tiles/${g}`);
 
-            // let beforeBreak = 0;
-            // const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);
-            // for (const subdir of subdirs) {
-            //     const subfiles = fs.readdirSync(`tiles/${g}/${subdir}`).filter(f => f.indexOf("@") === -1);
-            //     beforeBreak += subfiles.length;
-            //     tilesPicnums.push(
-            //         ...subfiles
-            //         .map(f => f.split(".")[0])                    
-            //         .sort(smartSort)
-            //         .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
-            //     );
-            //     if (subdir.indexOf("$") > -1) {                    
-            //         tilesPicnums.push(
-            //              ...new Array(gridColumNumber - ((beforeBreak % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
-            //         )
-            //         beforeBreak = 0;
-            //     }
-            // }
-
             const files = fs.readdirSync(`tiles/${g}`).filter(f => f.endsWith(".png")).filter(f => f.indexOf("@") === -1);
             tilesPicnums.push(
                 ...files
                 .map(f => f.split(".")[0])
                 .sort(smartSort)
                 .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
-                // .concat(
-                //     ...new Array(gridColumNumber - ((files.length % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
-                // )
             );
 
             console.log(`${g} => ${tilesPicnums.length}`);
@@ -158,20 +136,6 @@ const tileGroups = groups.map(g => {
     const name = g.indexOf("#") > -1 ? g.split("#")[1] : g;
 
     const tilesPicnums = [];
-
-    // const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);
-    // for(const subdir of subdirs) {
-    //     const subfiles = fs.readdirSync(`tiles/${g}/${subdir}`).filter(f => f.indexOf("@") === -1);
-    //     tilesPicnums.push(
-    //         ...subfiles
-    //         .map(f => f.split(".")[0])                    
-    //         .sort(smartSort)
-    //         .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
-    //     );
-    //     if (subdir.indexOf("$") > -1) {                    
-    //         tilesPicnums.push("\n");
-    //     }
-    // }
 
     const processDirRecursive = (baseDir) => {                
         const entries = fs.readdirSync(baseDir).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);    
