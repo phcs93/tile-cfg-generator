@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 // directory where the tile folders are located
 const directory = "tiles";
@@ -41,7 +42,7 @@ const groups = fs.readdirSync(directory).filter(g => !g.endsWith(".png") && g.in
 // generate full tile group
 const taggedGroups = `tilegroup "TAGGED GROUPS" {
 
-    hotkey "T"
+    hotkey " "
 
     tiles {
 
@@ -58,26 +59,65 @@ const taggedGroups = `tilegroup "TAGGED GROUPS" {
                 ...new Array(gridColumNumber - (name.length + 4)).fill(separatorPicnum)
             ];
             
+            let beforeBreak = 0;
             const tilesPicnums = [];
 
-            let beforeBreak = 0;
-            const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);
-            for(const subdir of subdirs) {
-                const subfiles = fs.readdirSync(`tiles/${g}/${subdir}`).filter(f => f.indexOf("@") === -1);
-                beforeBreak += subfiles.length;
-                tilesPicnums.push(
-                    ...subfiles
-                    .map(f => f.split(".")[0])                    
-                    .sort(smartSort)
-                    .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
-                );
-                if (subdir.indexOf("$") > -1) {                    
-                    tilesPicnums.push(
-                         ...new Array(gridColumNumber - ((beforeBreak % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
-                    )
-                    beforeBreak = 0;
+            const processDirRecursive = (baseDir) => {
+                
+                const entries = fs.readdirSync(baseDir).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);
+            
+                for (const entry of entries) {
+                    
+                    const fullPath = path.join(baseDir, entry);
+                    const stat = fs.statSync(fullPath);
+            
+                    if (stat.isDirectory()) {
+
+                        const subfiles = fs.readdirSync(fullPath).filter(f => f.endsWith(".png") && f.indexOf("@") === -1);
+                        beforeBreak += subfiles.length;
+            
+                        tilesPicnums.push(
+                            ...subfiles
+                            .map(f => f.split(".")[0])
+                            .sort(smartSort)
+                            .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
+                        );
+            
+                        if (entry.indexOf("$") > -1) {
+                            tilesPicnums.push(
+                                ...new Array(gridColumNumber - ((beforeBreak % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
+                            );
+                            beforeBreak = 0;
+                        }
+            
+                        processDirRecursive(fullPath);
+
+                    }
+
                 }
+
             }
+            
+            processDirRecursive(`tiles/${g}`);
+
+            // let beforeBreak = 0;
+            // const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);
+            // for (const subdir of subdirs) {
+            //     const subfiles = fs.readdirSync(`tiles/${g}/${subdir}`).filter(f => f.indexOf("@") === -1);
+            //     beforeBreak += subfiles.length;
+            //     tilesPicnums.push(
+            //         ...subfiles
+            //         .map(f => f.split(".")[0])                    
+            //         .sort(smartSort)
+            //         .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
+            //     );
+            //     if (subdir.indexOf("$") > -1) {                    
+            //         tilesPicnums.push(
+            //              ...new Array(gridColumNumber - ((beforeBreak % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
+            //         )
+            //         beforeBreak = 0;
+            //     }
+            // }
 
             const files = fs.readdirSync(`tiles/${g}`).filter(f => f.endsWith(".png")).filter(f => f.indexOf("@") === -1);
             tilesPicnums.push(
@@ -89,6 +129,8 @@ const taggedGroups = `tilegroup "TAGGED GROUPS" {
                 //     ...new Array(gridColumNumber - ((files.length % gridColumNumber) || gridColumNumber)).fill(blankPicnum)
                 // )
             );
+
+            console.log(`${g} => ${tilesPicnums.length}`);
 
             tilesPicnums.push(
                 ...new Array(gridColumNumber - (tilesPicnums.length % gridColumNumber || gridColumNumber)).fill(blankPicnum)
@@ -108,6 +150,8 @@ const taggedGroups = `tilegroup "TAGGED GROUPS" {
 
 }`;
 
+console.log("=========================");
+
 // generate individual tile groups
 const tileGroups = groups.map(g => {
 
@@ -115,19 +159,42 @@ const tileGroups = groups.map(g => {
 
     const tilesPicnums = [];
 
-    const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);
-    for(const subdir of subdirs) {
-        const subfiles = fs.readdirSync(`tiles/${g}/${subdir}`).filter(f => f.indexOf("@") === -1);
-        tilesPicnums.push(
-            ...subfiles
-            .map(f => f.split(".")[0])                    
-            .sort(smartSort)
-            .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
-        );
-        if (subdir.indexOf("$") > -1) {                    
-            tilesPicnums.push("\n");
+    // const subdirs = fs.readdirSync(`tiles/${g}`).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);
+    // for(const subdir of subdirs) {
+    //     const subfiles = fs.readdirSync(`tiles/${g}/${subdir}`).filter(f => f.indexOf("@") === -1);
+    //     tilesPicnums.push(
+    //         ...subfiles
+    //         .map(f => f.split(".")[0])                    
+    //         .sort(smartSort)
+    //         .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
+    //     );
+    //     if (subdir.indexOf("$") > -1) {                    
+    //         tilesPicnums.push("\n");
+    //     }
+    // }
+
+    const processDirRecursive = (baseDir) => {                
+        const entries = fs.readdirSync(baseDir).filter(f => !f.endsWith(".png") && f.indexOf("@") === -1).sort(smartSort);    
+        for (const entry of entries) {            
+            const fullPath = path.join(baseDir, entry);
+            const stat = fs.statSync(fullPath);    
+            if (stat.isDirectory()) {
+                const subfiles = fs.readdirSync(fullPath).filter(f => f.endsWith(".png") && f.indexOf("@") === -1);    
+                tilesPicnums.push(
+                    ...subfiles
+                    .map(f => f.split(".")[0])
+                    .sort(smartSort)
+                    .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
+                );    
+                if (entry.indexOf("$") > -1) {
+                    tilesPicnums.push("\n");
+                }    
+                processDirRecursive(fullPath);
+            }
         }
     }
+    
+    processDirRecursive(`tiles/${g}`);
 
     const files = fs.readdirSync(`tiles/${g}`).filter(f => f.endsWith(".png")).filter(f => f.indexOf("@") === -1);
     tilesPicnums.push(
@@ -136,6 +203,8 @@ const tileGroups = groups.map(g => {
         .sort(smartSort)
         .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
     );
+
+    console.log(`${g} => ${tilesPicnums.length}`);
 
     return `    
 tilegroup "${name.toUpperCase()}" {
@@ -149,7 +218,7 @@ tilegroup "${name.toUpperCase()}" {
 });
 
 // generate the final tiles.cfg content
-const tilesCfgContent = template.replace("{content}", [taggedGroups/*, ...tileGroups.map(g => g.trim())*/].join("\n\n"));
+const tilesCfgContent = template.replace("{content}", [taggedGroups, ...tileGroups.map(g => g.trim())].join("\n\n"));
 
 // create files
 fs.writeFileSync("tiles.cfg", tilesCfgContent);
