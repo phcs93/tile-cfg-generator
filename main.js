@@ -25,8 +25,12 @@ const gridColumNumber = resolution.width / 64;
 const smartSort = (a,b) => {
     if (/z\d*#/.test(a) && !/z\d*#/.test(b)) return +1;
     if (!/z\d*#/.test(a) && /z\d*#/.test(b)) return -1;
-    if (/#/.test(a) && !/#/.test(b)) return -1;
-    if (!/#/.test(a) && /#/.test(b)) return +1;
+    if (/#/.test(a) && !/#/.test(b)) {
+        return parseInt(a.split("#")[0]) - b;
+    };
+    if (!/#/.test(a) && /#/.test(b)) {
+        return a - parseInt(b.split("#")[0]);
+    }
     if (/#/.test(a) && /#/.test(b)) {
         return parseInt(a.split("#")[0]) - parseInt(b.split("#")[0]);
     }
