@@ -155,7 +155,7 @@ const tileGroups = groups.map(g => {
                     .map(f => f.indexOf("#") > -1 ? f.split("#")[1] : f)
                 );    
                 if (entry.indexOf("$") > -1) {
-                    tilesPicnums.push("\n");
+                    tilesPicnums.push(`${-1}\n`);
                 }    
                 processDirRecursive(fullPath);
             }
@@ -178,7 +178,7 @@ const tileGroups = groups.map(g => {
 tilegroup "${name.toUpperCase()}" {
     hotkey "${name.charAt(0).toUpperCase()}"
     tiles {            
-        ${tilesPicnums.join(" ").split("\n").map(t => t.trim()).join("\n\t\t")}
+        ${tilesPicnums.join(" ").split("\n").map(t => t.trim()).join("\n        ")}
     }            
 }    
     `;
@@ -186,8 +186,9 @@ tilegroup "${name.toUpperCase()}" {
 });
 
 // generate the final tiles.cfg content
-const tilesCfgContent = template.replace("{content}", [taggedGroups, ...tileGroups.map(g => g.trim())].join("\n\n"));
+const tilesCfgContent = template.replace("{content}", [/*taggedGroups,*/ ...tileGroups.map(g => g.trim())].join("\n\n"));
 
 // create files
 fs.writeFileSync("tiles.cfg", tilesCfgContent);
 fs.writeFileSync("C:\\Games\\Duke Nukem 3D\\mapster\\tiles.cfg", tilesCfgContent);
+fs.writeFileSync("C:\\GIT\\eduke32\\tiles.cfg", tilesCfgContent);
